@@ -4,18 +4,34 @@ import BABYLON from './../../node_modules/babylonjs/dist/preview release/babylon
 let canvas = document.getElementById('renderCanvas'); // canvas element to render to
 let engine = new BABYLON.Engine(canvas, true); // load instance of the engine
 
+let normalCamera;
+
+// webVR can only be enabled by user input, so inject a button
+let button = document.createElement('input');
+button.setAttribute('type', 'button');
+button.setAttribute('value', 'Enter VR Mode');
+button.onclick = () => {
+  if (normalCamera) {
+    normalCamera.detachControl(canvas);
+  }
+
+  let vrCamera = new BABYLON.WebVRFreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene);
+  vrCamera.attachControl(canvas, false);
+}
+document.body.appendChild(button);
+
 function createScene () {
   // create scene to render 3d objects to
   let scene = new BABYLON.Scene(engine);
 
-  // create camera in above scene at specified vector coordinates
-  let camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene);
+  // create a webVR camera in above scene at specified vector coordinates - http://doc.babylonjs.com/overviews/webvr_camera
+  normalCamera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene);
 
   // target the camera towards the scene origin
-  camera.setTarget(BABYLON.Vector3.Zero());
+  normalCamera.setTarget(BABYLON.Vector3.Zero());
 
   // attach camera to the html canvas
-  camera.attachControl(canvas, false);
+  normalCamera.attachControl(canvas, false);
 
   // create a simple light
   let light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
